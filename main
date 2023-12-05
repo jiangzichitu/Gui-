@@ -1,0 +1,670 @@
+package 期末;
+
+import javax.swing.*;
+import javax.swing.filechooser.*;
+import javax.swing.text.*;
+import javax.swing.undo.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.print.*;
+import java.io.*;
+import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
+public class oneman extends JFrame implements ActionListener {
+
+        boolean wordWrapEnabled = true;   //判断换行功能与按钮是否对应上
+        boolean stateEnable = true;
+        UndoManager undoManager;  //管理撤销功能的成员变量
+        int curr;
+        JTextField NewTextField;  //添加一个新的文本框
+        JTextArea ta;
+        JDialog gotoDialog;//转到 功能的对话框
+        JScrollPane jsp;
+        JMenuItem jm11;
+        JMenuItem jm12;
+        JMenuItem jm13;
+        JMenuItem jm14;
+        JMenuItem jm15;
+        JMenuItem jm16;
+        JMenuItem jm17;
+        JMenuItem jm18;
+
+
+        JMenuItem jm2;
+        JMenuItem jm21;
+        JMenuItem jm22;
+        JMenuItem jm23;
+        JMenuItem jm24;
+        JMenuItem jm25;
+        JMenuItem jm26;
+        JMenuItem jm27;
+        JMenuItem jm28;
+        JMenuItem jm29;
+        JMenuItem jm211;
+        JMenuItem jm212;
+        JMenuItem times;
+
+        JCheckBoxMenuItem  jm31;
+
+        JMenuItem  jm32;
+
+        JDialog fontDialog;
+        JSlider fontSizeSlider;
+
+
+        JMenuItem  jm41;
+        JMenuItem  jm42;
+        JMenuItem jm51;
+        JMenuItem jm52;
+        JMenuItem jm53;
+
+        public oneman() {
+                this.setSize(690, 520);
+                this.setTitle("记事本");
+                ta = new JTextArea();
+                ta.setLineWrap(wordWrapEnabled);    //设置自动换行   默认关闭
+                ta.setWrapStyleWord(true);    //设置换行不断字
+                jsp = new JScrollPane(ta);
+                this.add(jsp);
+
+
+                JMenuBar jMenuBar = new JMenuBar();
+                this.setJMenuBar(jMenuBar);
+                this.setVisible(true);
+
+
+                undoManager = new UndoManager();//初始化
+                ta.getDocument().addUndoableEditListener(undoManager);
+
+                JMenu fileMeun = new JMenu("文件(F)");
+                fileMeun.setMnemonic(KeyEvent.VK_F);
+                fileMeun.addActionListener(this);
+                jMenuBar.add(fileMeun);
+
+                JMenu eiirMenu = new JMenu("編輯(E)");
+                eiirMenu.setMnemonic(KeyEvent.VK_E);
+                eiirMenu.addActionListener(this);
+                jMenuBar.add(eiirMenu);
+
+                JMenu option = new JMenu("格式(O)");
+                option.setMnemonic(KeyEvent.VK_O);
+                option.addActionListener(this);
+                jMenuBar.add(option);
+
+                JMenu lookMenu = new JMenu("查看(V)");
+                lookMenu.setMnemonic(KeyEvent.VK_V);
+                lookMenu.addActionListener(this);
+                jMenuBar.add(lookMenu);
+
+                JMenu helpMeun = new JMenu("帮助(H)");
+                helpMeun.setMnemonic(KeyEvent.VK_H);
+                helpMeun.addActionListener(this);
+                jMenuBar.add(helpMeun);
+
+
+                jm11 = new JMenuItem("新建(N)");
+                jm11.setMnemonic(KeyEvent.VK_N);
+                jm11.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
+                jm11.addActionListener(this);
+                fileMeun.add(jm11);
+
+                jm12 = new JMenuItem("新窗口(W)");
+                jm12.setMnemonic(KeyEvent.VK_W);
+                jm12.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
+                jm12.addActionListener(this);
+                fileMeun.add(jm12);
+
+
+                jm13 = new JMenuItem("打开(O)");
+                jm13.setMnemonic(KeyEvent.VK_O);
+                jm13.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
+                jm13.addActionListener(this);
+                fileMeun.add(jm13);
+
+                jm14 = new JMenuItem("保存(S)");
+                jm14.setMnemonic(KeyEvent.VK_S);
+                jm14.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
+                jm14.addActionListener(this);
+                fileMeun.add(jm14);
+
+
+                jm15 = new JMenuItem("另存为(A)");
+                jm15.setMnemonic(KeyEvent.VK_A);
+                jm15.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
+                jm15.addActionListener(this);
+                fileMeun.add(jm15);
+
+                fileMeun.addSeparator();
+
+                jm16 = new JMenuItem("页面设置(U)");
+                jm16.setMnemonic(KeyEvent.VK_U);
+                jm16.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.CTRL_MASK));
+                jm16.addActionListener(this);
+                fileMeun.add(jm16);
+
+                jm17 = new JMenuItem("打印(P)");
+                jm17.setMnemonic(KeyEvent.VK_P);
+                jm17.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
+                jm17.addActionListener(this);
+                fileMeun.add(jm17);
+
+                fileMeun.addSeparator();
+
+                jm18 = new JMenuItem("退出(X)");
+                jm18.addActionListener(this);
+                fileMeun.add(jm18);
+
+                //t第2列功能
+                jm2 = new JMenuItem("撤销(U)");
+                jm2.setMnemonic(KeyEvent.VK_U);
+                jm2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));
+                jm2.addActionListener(this);
+                eiirMenu.add(jm2);
+
+
+                eiirMenu.addSeparator();
+
+                jm21 = new JMenuItem("剪切(T)");
+                jm21.setMnemonic(KeyEvent.VK_T);
+                jm21.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
+                jm21.addActionListener(this);
+                eiirMenu.add(jm21);
+
+
+                jm22 = new JMenuItem("复制(C)");
+                jm22.setMnemonic(KeyEvent.VK_C);
+                jm22.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
+                jm22.addActionListener(this);
+                eiirMenu.add(jm22);
+
+
+                jm23 = new JMenuItem("粘贴(P)");
+                jm23.setMnemonic(KeyEvent.VK_P);
+                jm23.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
+                jm23.addActionListener(this);
+                eiirMenu.add(jm23);
+
+
+                jm24 = new JMenuItem("删除(L)");
+                jm24.setMnemonic(KeyEvent.VK_L);
+                jm24.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, InputEvent.CTRL_MASK));
+                jm24.addActionListener(this);
+                eiirMenu.add(jm24);
+
+
+                eiirMenu.addSeparator();
+
+                jm25 = new JMenuItem("使用bing搜索");
+                jm25.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
+                jm25.addActionListener(this);
+                eiirMenu.add(jm25);
+
+
+                eiirMenu.addSeparator();
+
+                jm26 = new JMenuItem("查找(F)");
+                jm26.setMnemonic(KeyEvent.VK_F);
+                jm26.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK));
+                jm26.addActionListener(this);
+                eiirMenu.add(jm26);
+
+
+                jm27 = new JMenuItem("查找上一个(N)");
+                jm27.setMnemonic(KeyEvent.VK_N);
+                jm27.setAccelerator(KeyStroke.getKeyStroke((char) KeyEvent.VK_F3));
+                jm27.addActionListener(this);
+                eiirMenu.add(jm27);
+
+                jm28 = new JMenuItem("查找下一个(V)");
+                jm28.setMnemonic(KeyEvent.VK_V);
+                jm28.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, InputEvent.SHIFT_MASK));
+                jm28.addActionListener(this);
+                eiirMenu.add(jm28);
+
+                jm29 = new JMenuItem("替换(R)");
+                jm29.setMnemonic(KeyEvent.VK_R);
+                jm29.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_MASK));
+                jm29.addActionListener(this);
+                eiirMenu.add(jm29);
+
+
+                jm211 = new JMenuItem("转到(G)");
+                jm211.setMnemonic(KeyEvent.VK_G);
+                jm211.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK));
+                jm211.addActionListener(this);
+                eiirMenu.add(jm211);
+
+                eiirMenu.addSeparator();
+
+                jm212 = new JMenuItem("全选(A)");
+                jm212.setMnemonic(KeyEvent.VK_A);
+                jm212.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
+                jm212.addActionListener(this);
+                eiirMenu.add(jm212);
+
+
+                times = new JMenuItem("日期/时间(D)");
+                times.setMnemonic(KeyEvent.VK_F5);
+                times.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, InputEvent.CTRL_MASK));
+                times.addActionListener(this);
+                eiirMenu.add(times);
+
+
+                // 创建切换按钮
+                jm31 = new JCheckBoxMenuItem("自动换行(W)");
+                jm31.setSelected(wordWrapEnabled);
+                jm31.setMnemonic(KeyEvent.VK_W);
+                jm31.addActionListener(this);
+                option.add(jm31);
+
+                jm32 = new JMenuItem("字体(F)");
+                jm32.setMnemonic(KeyEvent.VK_F);
+                jm32.addActionListener(this);
+                option.add(jm32);
+
+
+
+                jm41 = new JMenuItem("缩放(Z)");
+                jm41.setSelected(stateEnable);
+                jm41.setMnemonic(KeyEvent.VK_Z);
+                jm41.addActionListener(this);
+                lookMenu.add(jm41);
+
+                JMenuItem jm42 = new JMenuItem("状态栏(S)");
+                lookMenu.add(jm42);
+
+                JMenuItem jm51 = new JMenuItem("查看帮助(H)");
+                helpMeun.add(jm51);
+                JMenuItem jm52 = new JMenuItem("发送反馈(F)");
+                helpMeun.add(jm52);
+                helpMeun.addSeparator();
+                JMenuItem jm53 = new JMenuItem("关于记事本(A)");
+                helpMeun.add(jm53);
+
+
+                this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                this.setLocationRelativeTo(null);
+                this.setVisible(true);
+
+        }
+
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("*.txt", "txt");
+                if (actionEvent.getSource() == jm11) {
+                        this.setTitle("无标题 - 记事本");
+                        ta.setText("");
+                } else if (actionEvent.getSource() == jm12) {  //打开新窗口
+                        oneman om = new oneman();
+                } else if (actionEvent.getSource() == jm13) {  //新建功能
+                        JFileChooser fileChooser = new JFileChooser("d:");
+                        fileChooser.setFileFilter(filter);
+                        fileChooser.showOpenDialog(this);
+                        File file = fileChooser.getSelectedFile();
+                        this.setTitle(file.getName() + " - 记事本");
+                        //实现打开文件读取文件内容功能
+                        BufferedReader reader = null;
+                        String str = null;
+                        String[] sum = null;
+                        try {
+                                reader = new BufferedReader(new FileReader(file));
+                                while ((str = reader.readLine()) != null) {
+                                        System.out.println(str);
+                                        ta.append(str);
+                                }
+                        } catch
+                        (Exception e1) {
+                                e1.printStackTrace();
+                        } finally {
+                                try {
+                                        if (reader != null) {
+                                                reader.close();
+                                        }
+                                } catch (Exception e1) {
+                                        e1.printStackTrace();
+                                }
+                        }
+                } else if (actionEvent.getSource() == jm14) {  //保存功能
+                        JFileChooser fileChooser = new JFileChooser("d:");
+                        fileChooser.setFileFilter(filter);
+                        fileChooser.setDialogTitle("保存");
+                        fileChooser.showSaveDialog(this);
+                        File file = fileChooser.getSelectedFile();
+                        if (file.getName().endsWith(".txt") == false)
+                                file = new File(file.toString() + ".txt");
+                        String str = ta.getText();
+                        //保存
+                        BufferedWriter bw = null;
+                        FileWriter fw = null;
+                        try {
+                                fw = new FileWriter(file);
+                                bw = new BufferedWriter(fw);
+                                System.out.println(str);     //查看输入内容是否有问题
+                                System.out.println(file);    //查看文件路径
+                                bw.write(str);
+                                bw.newLine();
+                                bw.flush();
+
+                        } catch (Exception e1) {
+                                e1.printStackTrace();
+                        } finally {
+                                try {
+                                        if (bw != null) {
+                                                bw.close();
+                                        }
+                                        if (fw != null) {
+                                                fw.close();
+                                        }
+                                } catch (Exception e1) {
+                                        e1.printStackTrace();
+                                }
+                        }
+                } else if (actionEvent.getSource() == jm15) {    //另存为
+                        JFileChooser fileChooser = new JFileChooser("d:");
+                        fileChooser.setFileFilter(filter);
+                        fileChooser.setDialogTitle("另存为");
+                        fileChooser.showSaveDialog(this);
+                        File file = fileChooser.getSelectedFile();
+                        if (file.getName().endsWith(".txt") == false)
+                                file = new File(file.toString() + ".txt");
+                        String str = ta.getText();
+                        //保存
+                        BufferedWriter bw = null;
+                        FileWriter fw = null;
+                        try {
+                                fw = new FileWriter(file);
+                                bw = new BufferedWriter(fw);
+                                bw.write(str);
+                                bw.newLine();
+                                bw.flush();
+
+                        } catch (Exception e1) {
+                                e1.printStackTrace();
+                        } finally {
+                                try {
+                                        if (bw != null) {
+                                                bw.close();
+                                        }
+                                        if (fw != null) {
+                                                fw.close();
+                                        }
+                                } catch (Exception e1) {
+                                        e1.printStackTrace();
+                                }
+                        }
+
+
+                } else if (actionEvent.getSource() == jm16) {    //页面设置
+                        //添加页面设置对话框
+                        PrinterJob printerJob = PrinterJob.getPrinterJob();
+                        PageFormat pageFormat = printerJob.pageDialog(printerJob.defaultPage());
+
+                        //将页面设置应用到文本区域中
+                        ta.setFont(new Font("Arial", Font.PLAIN, 12));
+                        ta.setMargin(new Insets(10, 10, 10, 10));
+
+                        repaint();
+
+                } else if (actionEvent.getSource() == jm17) {     //打印
+                        PrinterJob printerJob = PrinterJob.getPrinterJob();
+                        PageFormat pageFormat = printerJob.pageDialog(printerJob.defaultPage());
+
+                        //设置打印的内容
+                        Printable printable = new Printable() {   //实验打印的方法
+                                @Override
+                                public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
+                                        if (pageIndex > 0) {
+                                                return NO_SUCH_PAGE;
+                                        }
+                                        Graphics2D g2d = (Graphics2D) graphics;
+                                        g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
+
+                                        //设置打印的字体大小
+                                        Font font = new Font("Arial", Font.PLAIN, 12);
+                                        g2d.setFont(font);
+
+                                        //获取文本的内容
+                                        String str = ta.getText();
+
+                                        //将文本内容按行划分
+                                        String[] lines = str.split("\\n");
+
+                                        //显示每页的行数
+                                        int linehang = (int) (pageFormat.getImageableX() / g2d.getFontMetrics().getHeight());
+
+                                        //当前页面起始行
+                                        int stratline = pageIndex * linehang;
+
+                                        //当前页面结束行
+                                        int endline = Math.min(stratline + linehang, lines.length);     //拿起始页加行数与换行后比较哪个小
+
+                                        //绘制每行文本内容
+                                        int y = 0;
+                                        for (int i = stratline; i < endline; i++) {
+                                                String line = lines[i];
+                                                g2d.drawString(line, 0, y);
+                                                y += g2d.getFontMetrics().getHeight();
+                                        }
+
+                                        return PAGE_EXISTS;
+                                }
+                        };
+                        printerJob.setPrintable(printable, pageFormat);
+
+                        if (printerJob.printDialog()) {
+                                try {
+                                        printerJob.print();
+                                } catch (Exception e1) {
+                                        e1.printStackTrace();
+                                }
+                        }
+
+                } else if (actionEvent.getSource() == jm18) {
+                        System.exit(0);
+                } else if (actionEvent.getSource() == jm2) {   //撤销功能
+                        try {
+                                undoManager.undo();
+                        } catch (Exception e1) {
+                                e1.printStackTrace();
+                        }
+                } else if (actionEvent.getSource() == jm21) {    //剪切
+                        ta.cut();
+                } else if (actionEvent.getSource() == jm22) {    //复制
+                        ta.copy();
+                } else if (actionEvent.getSource() == jm23) {    //粘贴
+                        ta.paste();
+                } else if (actionEvent.getSource() == jm24) {     //删除
+                        int stats = ta.getSelectionStart();
+                        int end = ta.getSelectionEnd();
+                        if (stats != end) {
+                                ta.replaceRange("", stats, end);   //将中间的内容替换为空，形成删除功能
+                        }
+                } else if (actionEvent.getSource() == jm25) {    //打开bing进行搜索
+                        String site = "https://cn.bing.com/?mkt=zh-CN";
+                        try {
+                                Desktop desktop = Desktop.getDesktop();
+                                if (desktop.isDesktopSupported() && desktop.isSupported(Desktop.Action.BROWSE)) {
+                                        URI uri = new URI(site);
+                                        desktop.browse(uri);
+                                }
+                        } catch (Exception e1){
+                                e1.printStackTrace();
+                        }
+                } else if (actionEvent.getSource() == jm26) {
+
+                        // 创建标签和文本框
+                        JLabel label = new JLabel("Line Number:");
+                        JTextField textField = new JTextField();
+
+                        // 创建按钮
+                        JButton okButton = new JButton("OK");
+                        okButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                        // 获取用户输入的行数
+                                        String lineNumberString = textField.getText();
+
+                                        try {
+                                                int lineNumber = Integer.parseInt(lineNumberString);
+
+                                                // 跳转到指定行数
+                                                int pos = ta.getLineStartOffset(lineNumber - 1);
+                                                ta.setCaretPosition(pos);
+                                        } catch (NumberFormatException ex) {
+                                                ex.printStackTrace();
+                                        } catch (BadLocationException ex) {
+                                                ex.printStackTrace();
+                                        }
+
+                                        // 关闭对话框
+                                        gotoDialog.dispose();
+                                }
+                        });
+                } else if (actionEvent.getSource() == jm27) {   //查找上一个
+                        String text = ta.getText();
+                        String seachString = ta.getSelectedText();   //获取选中的字符
+                        if (seachString != null && !seachString.isEmpty()) {
+                                curr = text.lastIndexOf(seachString, curr - 1);
+                        } else {
+                                JOptionPane.showMessageDialog(null, "Not Found");
+                        }
+                } else if (actionEvent.getSource() == jm28) { //查找下一个
+                        String text = ta.getText();
+                        String searchString = ta.getSelectedText();
+                        if (searchString != null && !searchString.isEmpty()) {
+                                curr = text.indexOf(searchString, curr + 1);
+                                if (curr >= 0) {
+                                        ta.setSelectionStart(curr);
+                                        ta.setSelectionEnd(curr + searchString.length());
+                                } else {
+                                        JOptionPane.showMessageDialog(null, "Not found");
+                                }
+                        }
+                } else if (actionEvent.getSource() == jm29) {   //替换功能
+                        System.out.println("替换" );
+                        String text = ta.getText();
+                        String selectedText = ta.getSelectedText();
+                        String searchString;
+                        if (selectedText != null && !selectedText.isEmpty()) {
+                                searchString = selectedText;
+                        } else {
+                                searchString = JOptionPane.showInputDialog("Find:");
+                        }
+                        if (searchString != null && !searchString.isEmpty()) {
+                                String replaceString = JOptionPane.showInputDialog("请输入替换后的内容:");   //替换后的内容
+                                if (replaceString != null) {
+                                        String newText = text.replace(searchString, replaceString);
+                                        ta.setText(newText);
+                                }
+                        }
+                } else if (actionEvent.getSource()==jm211) {
+
+                        // 创建对话框
+                        gotoDialog = new JDialog();
+                        gotoDialog.setTitle("转到");
+                        gotoDialog.setSize(300, 150);
+                        gotoDialog.setLocationRelativeTo(null);
+                        gotoDialog.setLayout(new BorderLayout());
+
+                        // 创建标签和文本框
+                        JLabel label = new JLabel("请输入行号：");
+                        JTextField textField = new JTextField();
+
+                        // 创建按钮
+                        JButton okButton = new JButton("确定");
+                        okButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                        // 获取用户输入的行数
+                                        String lineNumberString = textField.getText();
+
+                                        try {
+                                                int lineNumber = Integer.parseInt(lineNumberString);
+                                                // 跳转到指定行数    行数为下标-1
+                                                int pos = ta.getLineStartOffset(lineNumber - 1);
+                                                ta.setCaretPosition(pos);       //移动鼠标光标到输入行数处
+                                        } catch (NumberFormatException ex) {
+                                                ex.printStackTrace();
+                                        } catch (BadLocationException ex) {
+                                                ex.printStackTrace();
+                                        }
+
+                                        // 关闭对话框
+                                        gotoDialog.dispose();
+                                }
+                        });
+
+                        // 添加组件到对话框
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new GridLayout(2, 1));
+                        panel.add(label);
+                        panel.add(textField);
+                        gotoDialog.add(panel, BorderLayout.CENTER);
+                        gotoDialog.add(okButton, BorderLayout.SOUTH);
+
+                        // 显示对话框
+                        gotoDialog.setVisible(true);
+                } else if (actionEvent.getSource() == jm212) {
+                        System.out.println("全选");
+                        ta.selectAll();
+                        String str = ta.getSelectedText();
+                        System.out.println(str);
+                } else if (actionEvent.getSource()== times) {
+                        System.out.println("时间");
+                        Date da =  new Date();
+                        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");   //设置日期的格式
+                        String time = ft.format(da);  //接收时间
+                        ta.append(time);    //将时间输出在内容后面不会覆盖内容
+                } else if (actionEvent.getSource()==jm31) {  //自动换行
+                        wordWrapEnabled = jm31.isSelected();
+                        ta.setLineWrap(wordWrapEnabled);
+                } else if (actionEvent.getSource()==jm32) {   //调整字体
+                        fontDialog = new JDialog();
+                        fontDialog.setTitle("字体调整");
+                        fontDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                        fontDialog.setSize(300, 200);
+                        fontDialog.setLayout(new FlowLayout());
+
+                        fontSizeSlider = new JSlider(JSlider.HORIZONTAL, 8, 72, 12);      //创建一个滑动条
+                        fontSizeSlider.setMajorTickSpacing(10);
+                        fontSizeSlider.setMinorTickSpacing(2);
+                        fontSizeSlider.setPaintTicks(true);
+                        fontSizeSlider.setPaintLabels(true);
+
+                        JButton applyButton = new JButton("确认");
+                        applyButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {    //添加一个判断，判断用户是否确认更改字体大小
+                                        int fontSize = fontSizeSlider.getValue();
+                                        Font currentFont = ta.getFont();   //获取字体大小
+                                        Font newFont = new Font(currentFont.getName(), currentFont.getStyle(), fontSize);
+                                        ta.setFont(newFont);
+                                        fontDialog.dispose();
+                                }
+                        });
+                        fontDialog.add(fontSizeSlider);
+                        fontDialog.add(applyButton);
+
+                        // 设置对话框为模态（即禁止与其他窗口的交互）
+                        fontDialog.setModal(true);
+
+                        // 设置对话框相对于文本区域居中显示
+                        fontDialog.setLocationRelativeTo(ta);
+
+                        fontDialog.setVisible(true);
+
+                }
+                else if (actionEvent.getSource()==jm41){
+
+                }
+        }
+
+
+                public static void main(String[] args) {
+                oneman oma = new oneman();
+        }
+}
